@@ -1,3 +1,5 @@
+let currentScenario = "";
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -143,8 +145,34 @@ function retrait() {
 }
 
 function virement() {
+    currentScenario = "virement";
     userMessage("Virement");
     botMessage("S’agit-il d’un virement non effectué ?");
+    options([
+        { text: "✅ Oui", action: virementOui },
+        { text: "❌ Non", action: virementNon }
+    ]);
+}
+function virementOui() {
+    userMessage("Oui");
+    botMessage("Depuis combien de temps le virement est-il en attente ?");
+    options([
+        { text: "⏱ Moins de 24h", action: () => {
+            userMessage("Moins de 24h");
+            botMessage("Veuillez patienter jusqu’à 24h. Le virement est en cours de traitement.");
+        }},
+        { text: "⌛ Plus de 24h", action: () => {
+            userMessage("Plus de 24h");
+            botMessage("Merci. Un dossier est ouvert. Un conseiller va vous contacter.");
+        }}
+    ]);
+}
+
+function virementNon() {
+    userMessage("Non");
+    botMessage("Merci pour votre confirmation. Puis-je vous rappeler d’autres services ?");
+}
+
 }
 
 function carte() {
