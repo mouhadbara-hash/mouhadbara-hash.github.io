@@ -2,79 +2,89 @@
 const messages = document.getElementById("messages");
 const clientName = localStorage.getItem("clientName") || "Client";
 
+/* ===== OUTILS D’AFFICHAGE ===== */
 function bot(text){
   messages.innerHTML += `<div class="msg bot">${text}</div>`;
   messages.scrollTop = messages.scrollHeight;
 }
-
 function user(text){
   messages.innerHTML += `<div class="msg user">${text}</div>`;
   messages.scrollTop = messages.scrollHeight;
 }
 
+/* ===== MESSAGE D’ACCUEIL ===== */
 bot(`Bonjour <b>${clientName}</b> 👋<br>
 Je suis l’assistant intelligent de <b>WaveBank</b>.<br>
-Je réponds aux questions bancaires simples.<br>
-Les opérations sensibles nécessitent une validation humaine.`);
+Posez-moi vos questions bancaires.`);
 
+/* ===== ENVOI MESSAGE ===== */
 function send(){
   const input = document.getElementById("userInput");
   const text = input.value.trim();
   if(!text) return;
-
   user(text);
   input.value = "";
-
-  setTimeout(()=>analyze(text.toLowerCase()),500);
+  setTimeout(() => analyze(text.toLowerCase()), 500);
 }
 
-function analyze(q){
+/* ===== IA : ANALYSE INTELLIGENTE ===== */
+function analyze(text){
 
-  /* ====== VIREMENTS ====== */
-  if(q.match(/virement|transfer|envoy/)){
-    if(q.match(/bloqu|échou|pas fait|erreur/)){
-      bot("Analyse effectuée.<br>➡ Un virement non exécuté est généralement lié à une vérification de sécurité ou à des informations incorrectes.<br><b>Décision :</b> intervention humaine requise.");
+  /* --- INTENTIONS --- */
+  const intents = {
+    virement: ["virement","transfer","envoyer","reçu","reception"],
+    retrait: ["retrait","retirer","argent","atm","distributeur"],
+    carte: ["carte","cb","visa","mastercard","bloquée","bloque"],
+    solde: ["solde","compte","argent","balance"],
+    conseiller: ["conseiller","agent","humain","assistance"],
+    ia: ["ia","intelligence","robot","automatique"]
+  };
+
+  function detect(intent){
+    return intents[intent].some(word => text.includes(word));
+  }
+
+  /* ===== RÉPONSES IA ===== */
+
+  if(detect("virement")){
+    if(text.includes("pas") || text.includes("bloqué") || text.includes("échoué")){
+      bot("Analyse effectuée ✅<br><br>Un virement non exécuté peut être causé par :<br>• informations incorrectes<br>• contrôle de sécurité<br>• délai interbancaire<br><br><b>Action recommandée :</b> intervention humaine.");
     } else {
-      bot("Les virements WaveBank sont instantanés.<br>Si le bénéficiaire est correct et le solde suffisant, l’opération est traitée automatiquement.");
+      bot("Les virements WaveBank sont généralement instantanés.<br>Si le bénéficiaire est correct, l’opération est traitée automatiquement.");
     }
     return;
   }
 
-  /* ====== RETRAITS ====== */
-  if(q.match(/retrait|retirer|argent/)){
-    bot("Un retrait peut être refusé pour 3 raisons :<br>• solde insuffisant<br>• plafond atteint<br>• restriction temporaire de sécurité<br><b>Aucune action automatique possible.</b>");
+  if(detect("retrait")){
+    bot("Un refus de retrait peut être lié à :<br>• solde insuffisant<br>• plafond atteint<br>• restriction temporaire<br><br>Une vérification humaine est recommandée.");
     return;
   }
 
-  /* ====== CARTE ====== */
-  if(q.match(/carte/)){
-    if(q.match(/bloqu|désactiv/)){
-      bot("Carte bloquée détectée.<br>⚠ Pour des raisons de sécurité bancaire, une IA ne peut PAS débloquer une carte.<br><b>Un conseiller humain est obligatoire.</b>");
+  if(detect("carte")){
+    if(text.includes("bloqu")){
+      bot("Carte bloquée détectée ⚠️<br>Pour des raisons de sécurité, une IA ne peut pas débloquer une carte bancaire.<br><b>Un conseiller humain est obligatoire.</b>");
     } else {
-      bot("Votre carte permet paiements et retraits.<br>Les paramètres sensibles sont sous contrôle humain.");
+      bot("Votre carte permet paiements et retraits.<br>Les paramètres sensibles sont protégés par contrôle humain.");
     }
     return;
   }
 
-  /* ====== SOLDE ====== */
-  if(q.match(/solde|argent|compte/)){
-    bot("Pour des raisons de confidentialité, l’accès au solde réel est interdit à une IA.<br>➡ Consultez votre espace client sécurisé.");
+  if(detect("solde")){
+    bot("Pour des raisons de confidentialité bancaire, une IA ne peut pas afficher le solde réel.<br>Veuillez consulter votre espace client sécurisé.");
     return;
   }
 
-  /* ====== IA / ÉTHIQUE ====== */
-  if(q.match(/ia|intelligence|robot/)){
-    bot("Je suis une intelligence artificielle d’assistance.<br>Mon rôle est d’aider, pas de décider.<br><b>La supervision humaine est obligatoire dans le secteur bancaire.</b>");
+  if(detect("conseiller")){
+    bot("Un conseiller humain peut prendre le relais.<br>Disponibilité : 08h–18h (jours ouvrés).");
     return;
   }
 
-  /* ====== HUMAIN ====== */
-  if(q.match(/conseiller|humain|agent/)){
-    bot("Un conseiller humain peut prendre le relais.<br>Horaires : 08h–18h (jours ouvrés).");
+  if(detect("ia")){
+    bot("Je suis une intelligence artificielle d’assistance bancaire.<br>Je vous aide à comprendre, mais les décisions critiques restent humaines.");
     return;
   }
 
-  /* ====== PAR DÉFAUT ====== */
-  bot("Demande analysée mais non reconnue.<br>Veuillez reformuler ou contacter un conseiller humain.");
+  /* ===== PAR DÉFAUT ===== */
+  bot("Je n’ai pas identifié clairement votre demande.<br>Pouvez-vous reformuler ou préciser votre problème bancaire ?");
 }
 </script>
