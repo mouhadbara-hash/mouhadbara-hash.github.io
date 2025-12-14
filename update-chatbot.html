@@ -53,7 +53,14 @@ body {
   padding: 12px 14px;
   border-radius: 16px;
   font-size: 14px;
+  animation: fadeIn 0.25s ease-in;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 
 .bot { background: #e9ecef; }
 .user { background: #0f0f0f; color: #fff; margin-left: auto; }
@@ -99,6 +106,19 @@ let scenario = "";
 const clientDays = 128;       // jours comme client
 const clientWithdrawals = 23; // nombre de retraits
 const clientTransfers = 41;   // nombre de virements
+  function typing(callback) {
+  const t = document.createElement("div");
+  t.className = "msg bot";
+  t.innerText = "✍️ L’assistant écrit...";
+  messages.appendChild(t);
+  messages.scrollTop = messages.scrollHeight;
+
+  setTimeout(() => {
+    messages.removeChild(t);
+    callback();
+  }, 700);
+}
+
 
 
 function bot(text) {
@@ -142,15 +162,18 @@ function backMenu() {
 
 /* ====== ACCUEIL ====== */
 setTimeout(() => {
+  typing(() => {
   bot(`
 Bonjour <b>${clientName}</b> 👋<br><br>
 📊 <b>Votre statut bancaire :</b><br>
-• Client depuis <b>${clientDays} jours</b><br>
+• Client depuis <b>${clientDays}</b> jours<br>
 • <b>${clientWithdrawals}</b> retraits effectués<br>
 • <b>${clientTransfers}</b> virements réalisés<br><br>
 Que souhaitez-vous faire ?
 `);
-backMenu();
+  backMenu();
+});
+
 
 }, 500);
 
