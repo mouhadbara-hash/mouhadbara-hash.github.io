@@ -96,18 +96,17 @@ body {
   <div id="messages" class="messages"></div>
   <div class="footer">Projet d’étude IA — Mme Inès BENHASSEN</div>
 </div>
+
 <script>
-/* ====== DONNÉES CLIENT ====== */
+/* ====== OUTILS ====== */
 const messages = document.getElementById("messages");
 const clientName = localStorage.getItem("clientName") || "Client";
 let scenario = "";
-
-const clientDays = 128;
-const clientWithdrawals = 23;
-const clientTransfers = 41;
-
-/* ====== ANIMATION "LE BOT ÉCRIT" ====== */
-function typing(callback) {
+  // --- Données client (simulation bancaire) ---
+const clientDays = 128;       // jours comme client
+const clientWithdrawals = 23; // nombre de retraits
+const clientTransfers = 41;   // nombre de virements
+  function typing(callback) {
   const t = document.createElement("div");
   t.className = "msg bot";
   t.innerText = "✍️ L’assistant écrit...";
@@ -120,7 +119,8 @@ function typing(callback) {
   }, 700);
 }
 
-/* ====== OUTILS ====== */
+
+
 function bot(text) {
   const d = document.createElement("div");
   d.className = "msg bot";
@@ -150,103 +150,142 @@ function options(list) {
   messages.scrollTop = messages.scrollHeight;
 }
 
-/* ====== MENU PRINCIPAL ====== */
 function backMenu() {
   bot("Que souhaitez-vous faire ?");
   options([
     { text: "💸 Retrait", action: retrait },
     { text: "🔁 Virement", action: virement },
     { text: "💳 Carte bloquée", action: carte },
-    { text: "📞 Conseiller", action: conseiller },
-    { text: "✅ Fin de la discussion", action: finDiscussion }
+    { text: "📞 Conseiller", action: conseiller }
   ]);
 }
 
 /* ====== ACCUEIL ====== */
 setTimeout(() => {
   typing(() => {
-    bot(`
+  bot(`
 Bonjour <b>${clientName}</b> 👋<br><br>
 📊 <b>Votre statut bancaire :</b><br>
-• Client depuis <b>${clientDays} jours</b><br>
-• <b>${clientWithdrawals}</b> retraits<br>
-• <b>${clientTransfers}</b> virements<br><br>
+• Client depuis <b>${clientDays}</b> jours<br>
+• <b>${clientWithdrawals}</b> retraits effectués<br>
+• <b>${clientTransfers}</b> virements réalisés<br><br>
+Que souhaitez-vous faire ?
 `);
-    backMenu();
-  });
+  backMenu();
+});
+
+
 }, 500);
 
 /* ====== SCÉNARIOS ====== */
 
+/* --- RETRAIT --- */
 function retrait() {
+  scenario = "retrait";
   user("Retrait");
-  bot("Quel type de problème de retrait ?");
+  bot("Quel type de problème de retrait rencontrez-vous ?");
   options([
-    { text: "🏧 Distributeur indisponible", action: () => {
-        user("Distributeur indisponible");
-        bot("Merci de réessayer plus tard ou utiliser un autre ATM.");
-        options([{ text: "🔙 Menu", action: backMenu }]);
-      }},
-    { text: "💰 Argent non reçu", action: () => {
-        user("Argent non reçu");
-        bot("Un dossier est ouvert. Recrédit sous 72h.");
-        options([{ text: "🔙 Menu", action: backMenu }]);
-      }},
+    { text: "🏧 Distributeur indisponible", action: retraitATM },
+    { text: "💰 Argent non reçu", action: retraitArgent },
     { text: "❌ Annuler", action: backMenu }
   ]);
 }
 
+function retraitATM() {
+  user("Distributeur indisponible");
+  bot("Nous vous conseillons d’utiliser un autre distributeur ou de réessayer plus tard.");
+  options([
+    { text: "📞 Contacter un conseiller", action: conseiller },
+    { text: "🔙 Menu", action: backMenu }
+  ]);
+}
+
+function retraitArgent() {
+  user("Argent non reçu");
+  bot("Le montant a-t-il été débité de votre compte ?");
+  options([
+    { text: "Oui", action: () => {
+        user("Oui");
+        bot("Un dossier est ouvert. Le montant sera recrédité sous 72h.");
+        options([{ text: "🔙 Menu", action: backMenu }]);
+      }},
+    { text: "Non", action: () => {
+        user("Non");
+        bot("Aucune action n’est nécessaire. Merci de vérifier votre historique.");
+        options([{ text: "🔙 Menu", action: backMenu }]);
+      }}
+  ]);
+}
+
+
+/* --- VIREMENT --- */
 function virement() {
+  scenario = "virement";
   user("Virement");
   bot("S’agit-il d’un virement non effectué ?");
   options([
-    { text: "Oui", action: () => {
-        user("Oui");
-        bot("Délai estimé : 24 à 72h ouvrées.");
-        options([{ text: "📞 Conseiller", action: conseiller },
-                 { text: "🔙 Menu", action: backMenu }]);
-      }},
+    { text: "Oui", action: virementOui },
     { text: "Non", action: backMenu }
   ]);
 }
+function virementOui() {
+  user("Oui");
+  bot("Depuis combien de temps le virement est-il en attente ?");
+  options([
+    { text: "⏱ Moins de 24h", action: () => {
+        user("Moins de 24h");
+        bot("Le virement est en cours de traitement. Merci de patienter.");
+        options([{ text: "🔙 Menu", action: backMenu }]);
+      }},
+    { text: "⌛ Plus de 24h", action: () => {
+        user("Plus de 24h");
+        bot("Un dossier est ouvert. Un conseiller va vous contacter.");
+        options([{ text: "📞 Conseiller", action: conseiller }]);
+      }}
+  ]);
+}
 
+/* --- CARTE BLOQUÉE --- */
 function carte() {
+  scenario = "carte";
   user("Carte bloquée");
-  bot("Souhaitez-vous débloquer votre carte ?");
+  bot("Quelle est la raison du blocage ?");
+  options([
+    { text: "🔐 Code PIN erroné", action: cartePin },
+    { text: "🌍 Paiement refusé à l’étranger", action: carteEtranger },
+    { text: "❌ Annuler", action: backMenu }
+  ]);
+}
+
+function cartePin() {
+  user("Code PIN erroné");
+  bot("Votre carte est temporairement bloquée pour sécurité.");
+  options([
+    { text: "📞 Débloquer avec un conseiller", action: conseiller },
+    { text: "🔙 Menu", action: backMenu }
+  ]);
+}
+
+function carteEtranger() {
+  user("Paiement refusé à l’étranger");
+  bot("Souhaitez-vous activer les paiements internationaux ?");
   options([
     { text: "Oui", action: () => {
         user("Oui");
-        bot("Vérification d’identité requise.");
-        options([{ text: "📞 Conseiller", action: conseiller }]);
+        bot("Paiements internationaux activés. Réessayez votre paiement.");
+        options([{ text: "🔙 Menu", action: backMenu }]);
       }},
     { text: "Non", action: backMenu }
   ]);
 }
 
+/* --- CONSEILLER --- */
 function conseiller() {
-  user("Conseiller");
-  bot("Un conseiller WaveBank vous contactera sous peu.");
+  user("Parler à un conseiller");
+  bot("Merci. Un conseiller WaveBank vous contactera dans les plus brefs délais.");
   options([{ text: "🔙 Menu", action: backMenu }]);
 }
-
-/* ====== FIN DE DISCUSSION ====== */
-function finDiscussion() {
-  user("Fin de la discussion");
-  typing(() => {
-    bot(`
-🙏 <b>Merci de faire confiance à WaveBank</b><br><br>
-<b>Récapitulatif :</b><br>
-• Client : ${clientName}<br>
-• Ancienneté : ${clientDays} jours<br>
-• Retraits : ${clientWithdrawals}<br>
-• Virements : ${clientTransfers}<br><br>
-À très bientôt.
-`);
-    options([{ text: "🔄 Nouvelle demande", action: backMenu }]);
-  });
-}
 </script>
-
 
 </body>
 </html>
