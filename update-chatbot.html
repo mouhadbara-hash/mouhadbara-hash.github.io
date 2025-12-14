@@ -160,28 +160,40 @@ backMenu();
 function retrait() {
   scenario = "retrait";
   user("Retrait");
-  bot("Avez-vous un problème de retrait ?");
+  bot("Quel type de problème de retrait rencontrez-vous ?");
   options([
-    { text: "✅ Oui", action: retraitOui },
-    { text: "❌ Non", action: backMenu }
+    { text: "🏧 Distributeur indisponible", action: retraitATM },
+    { text: "💰 Argent non reçu", action: retraitArgent },
+    { text: "❌ Annuler", action: backMenu }
   ]);
 }
-function retraitOui() {
-  user("Oui");
-  bot("Le distributeur a-t-il refusé la transaction ?");
+
+function retraitATM() {
+  user("Distributeur indisponible");
+  bot("Nous vous conseillons d’utiliser un autre distributeur ou de réessayer plus tard.");
+  options([
+    { text: "📞 Contacter un conseiller", action: conseiller },
+    { text: "🔙 Menu", action: backMenu }
+  ]);
+}
+
+function retraitArgent() {
+  user("Argent non reçu");
+  bot("Le montant a-t-il été débité de votre compte ?");
   options([
     { text: "Oui", action: () => {
         user("Oui");
-        bot("Veuillez réessayer plus tard ou utiliser un autre distributeur.");
+        bot("Un dossier est ouvert. Le montant sera recrédité sous 72h.");
         options([{ text: "🔙 Menu", action: backMenu }]);
       }},
     { text: "Non", action: () => {
         user("Non");
-        bot("Vérifiez votre solde. Si le problème persiste, un conseiller peut vous aider.");
-        options([{ text: "📞 Contacter un conseiller", action: conseiller }]);
+        bot("Aucune action n’est nécessaire. Merci de vérifier votre historique.");
+        options([{ text: "🔙 Menu", action: backMenu }]);
       }}
   ]);
 }
+
 
 /* --- VIREMENT --- */
 function virement() {
@@ -214,19 +226,31 @@ function virementOui() {
 function carte() {
   scenario = "carte";
   user("Carte bloquée");
-  bot("Votre carte est-elle actuellement bloquée ?");
+  bot("Quelle est la raison du blocage ?");
+  options([
+    { text: "🔐 Code PIN erroné", action: cartePin },
+    { text: "🌍 Paiement refusé à l’étranger", action: carteEtranger },
+    { text: "❌ Annuler", action: backMenu }
+  ]);
+}
+
+function cartePin() {
+  user("Code PIN erroné");
+  bot("Votre carte est temporairement bloquée pour sécurité.");
+  options([
+    { text: "📞 Débloquer avec un conseiller", action: conseiller },
+    { text: "🔙 Menu", action: backMenu }
+  ]);
+}
+
+function carteEtranger() {
+  user("Paiement refusé à l’étranger");
+  bot("Souhaitez-vous activer les paiements internationaux ?");
   options([
     { text: "Oui", action: () => {
         user("Oui");
-        bot("Souhaitez-vous la débloquer ?");
-        options([
-          { text: "Oui", action: () => {
-              user("Oui");
-              bot("Votre demande est enregistrée. Un agent va vérifier votre identité.");
-              options([{ text: "📞 Conseiller", action: conseiller }]);
-            }},
-          { text: "Non", action: backMenu }
-        ]);
+        bot("Paiements internationaux activés. Réessayez votre paiement.");
+        options([{ text: "🔙 Menu", action: backMenu }]);
       }},
     { text: "Non", action: backMenu }
   ]);
