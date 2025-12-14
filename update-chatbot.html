@@ -95,6 +95,11 @@ body {
 const messages = document.getElementById("messages");
 const clientName = localStorage.getItem("clientName") || "Client";
 let scenario = "";
+  // --- Données client (simulation bancaire) ---
+const clientDays = 128;       // jours comme client
+const clientWithdrawals = 23; // nombre de retraits
+const clientTransfers = 41;   // nombre de virements
+
 
 function bot(text) {
   const d = document.createElement("div");
@@ -137,8 +142,16 @@ function backMenu() {
 
 /* ====== ACCUEIL ====== */
 setTimeout(() => {
-  bot(`Bonjour <b>${clientName}</b> 👋<br>Bienvenue chez WaveBank.`);
-  backMenu();
+  bot(`
+Bonjour <b>${clientName}</b> 👋<br><br>
+📊 <b>Votre statut bancaire :</b><br>
+• Client depuis <b>${clientDays} jours</b><br>
+• <b>${clientWithdrawals}</b> retraits effectués<br>
+• <b>${clientTransfers}</b> virements réalisés<br><br>
+Que souhaitez-vous faire ?
+`);
+backMenu();
+
 }, 500);
 
 /* ====== SCÉNARIOS ====== */
