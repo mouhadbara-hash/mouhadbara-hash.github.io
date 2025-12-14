@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<title>WaveBank — Assistant Bancaire</title>
+
+<style>
+/* ====== FOND ENTREPRISE ====== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background:
+    linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.55)),
+    url("https://images.unsplash.com/photo-1560472354-b33ff0c44a43");
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ====== CARTE CHAT ====== */
+.chat-app {
+  width: 420px;
+  height: 640px;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  background: #0f0f0f;
+  color: #fff;
+  padding: 18px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.messages {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  background: #f5f7fa;
+}
+
+.msg {
+  max-width: 80%;
+  margin: 8px 0;
+  padding: 12px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+}
+
+.bot { background: #e9ecef; }
+.user { background: #0f0f0f; color: #fff; margin-left: auto; }
+
+.buttons {
+  margin-top: 8px;
+}
+.buttons button {
+  margin: 6px 6px 0 0;
+  padding: 10px 14px;
+  border-radius: 18px;
+  border: none;
+  background: #0f0f0f;
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.footer {
+  text-align: center;
+  padding: 8px;
+  font-size: 11px;
+  color: #777;
+  background: #fff;
+}
+</style>
+</head>
+
+<body>
+
+<div class="chat-app">
+  <div class="header">🤖 Assistant WaveBank</div>
+  <div id="messages" class="messages"></div>
+  <div class="footer">Projet d’étude IA — Mme Inès BENHASSEN</div>
+</div>
+
+<script>
+/* ====== OUTILS ====== */
+const messages = document.getElementById("messages");
+const clientName = localStorage.getItem("clientName") || "Client";
+let scenario = "";
+
+function bot(text) {
+  const d = document.createElement("div");
+  d.className = "msg bot";
+  d.innerHTML = text;
+  messages.appendChild(d);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function user(text) {
+  const d = document.createElement("div");
+  d.className = "msg user";
+  d.innerText = text;
+  messages.appendChild(d);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function options(list) {
+  const d = document.createElement("div");
+  d.className = "buttons";
+  list.forEach(o => {
+    const b = document.createElement("button");
+    b.innerText = o.text;
+    b.onclick = o.action;
+    d.appendChild(b);
+  });
+  messages.appendChild(d);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function backMenu() {
+  bot("Que souhaitez-vous faire ?");
+  options([
+    { text: "💸 Retrait", action: retrait },
+    { text: "🔁 Virement", action: virement },
+    { text: "💳 Carte bloquée", action: carte },
+    { text: "📞 Conseiller", action: conseiller }
+  ]);
+}
+
+/* ====== ACCUEIL ====== */
+setTimeout(() => {
+  bot(`Bonjour <b>${clientName}</b> 👋<br>Bienvenue chez WaveBank.`);
+  backMenu();
+}, 500);
+
+/* ====== SCÉNARIOS ====== */
+
+/* --- RETRAIT --- */
+function retrait() {
+  scenario = "retrait";
+  user("Retrait");
+  bot("Avez-vous un problème de retrait ?");
+  options([
+    { text: "✅ Oui", action: retraitOui },
+    { text: "❌ Non", action: backMenu }
+  ]);
+}
+function retraitOui() {
+  user("Oui");
+  bot("Le distributeur a-t-il refusé la transaction ?");
+  options([
+    { text: "Oui", action: () => {
+        user("Oui");
+        bot("Veuillez réessayer plus tard ou utiliser un autre distributeur.");
+        options([{ text: "🔙 Menu", action: backMenu }]);
+      }},
+    { text: "Non", action: () => {
+        user("Non");
+        bot("Vérifiez votre solde. Si le problème persiste, un conseiller peut vous aider.");
+        options([{ text: "📞 Contacter un conseiller", action: conseiller }]);
+      }}
+  ]);
+}
+
+/* --- VIREMENT --- */
+function virement() {
+  scenario = "virement";
+  user("Virement");
+  bot("S’agit-il d’un virement non effectué ?");
+  options([
+    { text: "Oui", action: virementOui },
+    { text: "Non", action: backMenu }
+  ]);
+}
+function virementOui() {
+  user("Oui");
+  bot("Depuis combien de temps le virement est-il en attente ?");
+  options([
+    { text: "⏱ Moins de 24h", action: () => {
+        user("Moins de 24h");
+        bot("Le virement est en cours de traitement. Merci de patienter.");
+        options([{ text: "🔙 Menu", action: backMenu }]);
+      }},
+    { text: "⌛ Plus de 24h", action: () => {
+        user("Plus de 24h");
+        bot("Un dossier est ouvert. Un conseiller va vous contacter.");
+        options([{ text: "📞 Conseiller", action: conseiller }]);
+      }}
+  ]);
+}
+
+/* --- CARTE BLOQUÉE --- */
+function carte() {
+  scenario = "carte";
+  user("Carte bloquée");
+  bot("Votre carte est-elle actuellement bloquée ?");
+  options([
+    { text: "Oui", action: () => {
+        user("Oui");
+        bot("Souhaitez-vous la débloquer ?");
+        options([
+          { text: "Oui", action: () => {
+              user("Oui");
+              bot("Votre demande est enregistrée. Un agent va vérifier votre identité.");
+              options([{ text: "📞 Conseiller", action: conseiller }]);
+            }},
+          { text: "Non", action: backMenu }
+        ]);
+      }},
+    { text: "Non", action: backMenu }
+  ]);
+}
+
+/* --- CONSEILLER --- */
+function conseiller() {
+  user("Parler à un conseiller");
+  bot("Merci. Un conseiller WaveBank vous contactera dans les plus brefs délais.");
+  options([{ text: "🔙 Menu", action: backMenu }]);
+}
+</script>
+
+</body>
+</html>
