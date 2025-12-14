@@ -1,112 +1,3 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<title>WaveBank – Assistant IA</title>
-
-<style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.6)),
-  url("https://images.unsplash.com/photo-1601597111158-2fceff292cdc");
-  background-size:cover;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-.chat-app{
-  width:420px;
-  height:640px;
-  background:#fff;
-  border-radius:18px;
-  display:flex;
-  flex-direction:column;
-  box-shadow:0 20px 50px rgba(0,0,0,.4);
-}
-
-header{
-  background:#000;
-  color:#fff;
-  padding:14px;
-  text-align:center;
-  font-weight:bold;
-}
-
-.messages{
-  flex:1;
-  padding:15px;
-  overflow-y:auto;
-}
-
-.msg{
-  max-width:80%;
-  padding:10px 14px;
-  margin-bottom:10px;
-  border-radius:14px;
-  font-size:14px;
-}
-
-.bot{
-  background:#f1f1f1;
-}
-
-.user{
-  background:#0a5cff;
-  color:#fff;
-  margin-left:auto;
-}
-
-.input-area{
-  display:flex;
-  padding:10px;
-  border-top:1px solid #ddd;
-}
-
-input{
-  flex:1;
-  padding:10px;
-  border-radius:20px;
-  border:1px solid #ccc;
-  outline:none;
-}
-
-button{
-  margin-left:8px;
-  border:none;
-  background:#0a5cff;
-  color:#fff;
-  padding:0 18px;
-  border-radius:20px;
-  cursor:pointer;
-}
-
-footer{
-  text-align:center;
-  font-size:12px;
-  color:#777;
-  padding:6px;
-}
-</style>
-</head>
-
-<body>
-
-<div class="chat-app">
-  <header>🤖 Assistant WaveBank</header>
-
-  <div class="messages" id="messages"></div>
-
-  <div class="input-area">
-    <input id="userInput" placeholder="Posez votre question...">
-    <button onclick="send()">➤</button>
-  </div>
-
-  <footer>Projet d’étude IA – Mme Inès BENHASSEN</footer>
-</div>
-
 <script>
 const messages = document.getElementById("messages");
 const clientName = localStorage.getItem("clientName") || "Client";
@@ -122,64 +13,68 @@ function user(text){
 }
 
 bot(`Bonjour <b>${clientName}</b> 👋<br>
-Je suis l’assistant virtuel de WaveBank.<br>
-Je peux vous aider pour des questions sur les virements, retraits, cartes ou informations générales.`);
+Je suis l’assistant intelligent de <b>WaveBank</b>.<br>
+Je réponds aux questions bancaires simples.<br>
+Les opérations sensibles nécessitent une validation humaine.`);
 
 function send(){
   const input = document.getElementById("userInput");
-  const text = input.value.trim().toLowerCase();
+  const text = input.value.trim();
   if(!text) return;
 
-  user(input.value);
+  user(text);
   input.value = "";
 
-  setTimeout(()=>analyze(text),600);
+  setTimeout(()=>analyze(text.toLowerCase()),500);
 }
 
-function analyze(text){
+function analyze(q){
 
-  /* ===== VIREMENTS ===== */
-  if(text.includes("virement")){
-    if(text.includes("non") || text.includes("bloqué") || text.includes("échoué")){
-      bot("Je comprends. Un virement non effectué peut être dû à un solde insuffisant, une erreur de bénéficiaire ou un contrôle de sécurité. Souhaitez-vous que je vous mette en relation avec un conseiller humain ?");
-    }else{
-      bot("Les virements WaveBank sont généralement instantanés. En cas de retard, une vérification humaine est recommandée.");
+  /* ====== VIREMENTS ====== */
+  if(q.match(/virement|transfer|envoy/)){
+    if(q.match(/bloqu|échou|pas fait|erreur/)){
+      bot("Analyse effectuée.<br>➡ Un virement non exécuté est généralement lié à une vérification de sécurité ou à des informations incorrectes.<br><b>Décision :</b> intervention humaine requise.");
+    } else {
+      bot("Les virements WaveBank sont instantanés.<br>Si le bénéficiaire est correct et le solde suffisant, l’opération est traitée automatiquement.");
     }
     return;
   }
 
-  /* ===== RETRAITS ===== */
-  if(text.includes("retrait")){
-    bot("Pour les retraits, assurez-vous que votre solde est suffisant et que votre compte n’est pas temporairement limité. Un agent peut vérifier votre situation si nécessaire.");
+  /* ====== RETRAITS ====== */
+  if(q.match(/retrait|retirer|argent/)){
+    bot("Un retrait peut être refusé pour 3 raisons :<br>• solde insuffisant<br>• plafond atteint<br>• restriction temporaire de sécurité<br><b>Aucune action automatique possible.</b>");
     return;
   }
 
-  /* ===== CARTE ===== */
-  if(text.includes("carte")){
-    if(text.includes("bloquée")){
-      bot("Votre carte peut être bloquée pour des raisons de sécurité. Pour votre protection, seul un conseiller humain peut la débloquer après vérification.");
-    }else{
-      bot("Votre carte vous permet de payer et retirer facilement. En cas d’anomalie, un contrôle humain est indispensable.");
+  /* ====== CARTE ====== */
+  if(q.match(/carte/)){
+    if(q.match(/bloqu|désactiv/)){
+      bot("Carte bloquée détectée.<br>⚠ Pour des raisons de sécurité bancaire, une IA ne peut PAS débloquer une carte.<br><b>Un conseiller humain est obligatoire.</b>");
+    } else {
+      bot("Votre carte permet paiements et retraits.<br>Les paramètres sensibles sont sous contrôle humain.");
     }
     return;
   }
 
-  /* ===== IA / PROJET ===== */
-  if(text.includes("ia") || text.includes("intelligence")){
-    bot("Je suis un assistant basé sur une intelligence artificielle simulée. Mon rôle est d’assister l’humain, pas de le remplacer. Les décisions finales reviennent toujours à un agent humain.");
+  /* ====== SOLDE ====== */
+  if(q.match(/solde|argent|compte/)){
+    bot("Pour des raisons de confidentialité, l’accès au solde réel est interdit à une IA.<br>➡ Consultez votre espace client sécurisé.");
     return;
   }
 
-  /* ===== HUMAIN ===== */
-  if(text.includes("humain") || text.includes("conseiller")){
-    bot("Un conseiller humain peut intervenir à tout moment pour vérifier, valider ou corriger mes réponses. L’humain reste au centre des décisions.");
+  /* ====== IA / ÉTHIQUE ====== */
+  if(q.match(/ia|intelligence|robot/)){
+    bot("Je suis une intelligence artificielle d’assistance.<br>Mon rôle est d’aider, pas de décider.<br><b>La supervision humaine est obligatoire dans le secteur bancaire.</b>");
     return;
   }
 
-  /* ===== PAR DÉFAUT ===== */
-  bot("Je n’ai pas toutes les réponses. Pour des raisons de fiabilité et d’éthique, certaines décisions doivent être validées par un humain. Pouvez-vous préciser votre demande ?");
+  /* ====== HUMAIN ====== */
+  if(q.match(/conseiller|humain|agent/)){
+    bot("Un conseiller humain peut prendre le relais.<br>Horaires : 08h–18h (jours ouvrés).");
+    return;
+  }
+
+  /* ====== PAR DÉFAUT ====== */
+  bot("Demande analysée mais non reconnue.<br>Veuillez reformuler ou contacter un conseiller humain.");
 }
 </script>
-
-</body>
-</html>
