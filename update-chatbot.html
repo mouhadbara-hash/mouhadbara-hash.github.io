@@ -1,90 +1,93 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<title>WaveBank — Assistant Bancaire</title>
+<meta charset="UTF-8">
+<title>WaveBank – Assistant IA</title>
 
 <style>
-/* ====== FOND ENTREPRISE ====== */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background:
-    linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.55)),
-    url("https://images.unsplash.com/photo-1560472354-b33ff0c44a43");
-  background-size: cover;
-  background-position: center;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.6)),
+  url("https://images.unsplash.com/photo-1601597111158-2fceff292cdc");
+  background-size:cover;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
-/* ====== CARTE CHAT ====== */
-.chat-app {
-  width: 420px;
-  height: 640px;
-  background: #fff;
-  border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0,0,0,.35);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+.chat-app{
+  width:420px;
+  height:640px;
+  background:#fff;
+  border-radius:18px;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 20px 50px rgba(0,0,0,.4);
 }
 
-.header {
-  background: #0f0f0f;
-  color: #fff;
-  padding: 18px;
-  text-align: center;
-  font-weight: bold;
+header{
+  background:#000;
+  color:#fff;
+  padding:14px;
+  text-align:center;
+  font-weight:bold;
 }
 
-.messages {
-  flex: 1;
-  padding: 16px;
-  overflow-y: auto;
-  background: #f5f7fa;
+.messages{
+  flex:1;
+  padding:15px;
+  overflow-y:auto;
 }
 
-.msg {
-  max-width: 80%;
-  margin: 8px 0;
-  padding: 12px 14px;
-  border-radius: 16px;
-  font-size: 14px;
-  animation: fadeIn 0.25s ease-in;
+.msg{
+  max-width:80%;
+  padding:10px 14px;
+  margin-bottom:10px;
+  border-radius:14px;
+  font-size:14px;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+.bot{
+  background:#f1f1f1;
 }
 
-
-.bot { background: #e9ecef; }
-.user { background: #0f0f0f; color: #fff; margin-left: auto; }
-
-.buttons {
-  margin-top: 8px;
-}
-.buttons button {
-  margin: 6px 6px 0 0;
-  padding: 10px 14px;
-  border-radius: 18px;
-  border: none;
-  background: #0f0f0f;
-  color: #fff;
-  cursor: pointer;
-  font-size: 13px;
+.user{
+  background:#0a5cff;
+  color:#fff;
+  margin-left:auto;
 }
 
-.footer {
-  text-align: center;
-  padding: 8px;
-  font-size: 11px;
-  color: #777;
-  background: #fff;
+.input-area{
+  display:flex;
+  padding:10px;
+  border-top:1px solid #ddd;
+}
+
+input{
+  flex:1;
+  padding:10px;
+  border-radius:20px;
+  border:1px solid #ccc;
+  outline:none;
+}
+
+button{
+  margin-left:8px;
+  border:none;
+  background:#0a5cff;
+  color:#fff;
+  padding:0 18px;
+  border-radius:20px;
+  cursor:pointer;
+}
+
+footer{
+  text-align:center;
+  font-size:12px;
+  color:#777;
+  padding:6px;
 }
 </style>
 </head>
@@ -92,198 +95,89 @@ body {
 <body>
 
 <div class="chat-app">
-  <div class="header">🤖 Assistant WaveBank</div>
-  <div id="messages" class="messages"></div>
-  <div class="footer">Projet d’étude IA — Mme Inès BENHASSEN</div>
+  <header>🤖 Assistant WaveBank</header>
+
+  <div class="messages" id="messages"></div>
+
+  <div class="input-area">
+    <input id="userInput" placeholder="Posez votre question...">
+    <button onclick="send()">➤</button>
+  </div>
+
+  <footer>Projet d’étude IA – Mme Inès BENHASSEN</footer>
 </div>
 
 <script>
-/* ====== OUTILS ====== */
 const messages = document.getElementById("messages");
 const clientName = localStorage.getItem("clientName") || "Client";
-let scenario = "";
-  // --- Données client (simulation bancaire) ---
-const clientDays = 128;       // jours comme client
-const clientWithdrawals = 23; // nombre de retraits
-const clientTransfers = 41;   // nombre de virements
-  function typing(callback) {
-  const t = document.createElement("div");
-  t.className = "msg bot";
-  t.innerText = "✍️ L’assistant écrit...";
-  messages.appendChild(t);
-  messages.scrollTop = messages.scrollHeight;
 
-  setTimeout(() => {
-    messages.removeChild(t);
-    callback();
-  }, 700);
-}
-
-
-
-function bot(text) {
-  const d = document.createElement("div");
-  d.className = "msg bot";
-  d.innerHTML = text;
-  messages.appendChild(d);
+function bot(text){
+  messages.innerHTML += `<div class="msg bot">${text}</div>`;
   messages.scrollTop = messages.scrollHeight;
 }
 
-function user(text) {
-  const d = document.createElement("div");
-  d.className = "msg user";
-  d.innerText = text;
-  messages.appendChild(d);
+function user(text){
+  messages.innerHTML += `<div class="msg user">${text}</div>`;
   messages.scrollTop = messages.scrollHeight;
 }
 
-function options(list) {
-  const d = document.createElement("div");
-  d.className = "buttons";
-  list.forEach(o => {
-    const b = document.createElement("button");
-    b.innerText = o.text;
-    b.onclick = o.action;
-    d.appendChild(b);
-  });
-  messages.appendChild(d);
-  messages.scrollTop = messages.scrollHeight;
+bot(`Bonjour <b>${clientName}</b> 👋<br>
+Je suis l’assistant virtuel de WaveBank.<br>
+Je peux vous aider pour des questions sur les virements, retraits, cartes ou informations générales.`);
+
+function send(){
+  const input = document.getElementById("userInput");
+  const text = input.value.trim().toLowerCase();
+  if(!text) return;
+
+  user(input.value);
+  input.value = "";
+
+  setTimeout(()=>analyze(text),600);
 }
 
-function backMenu() {
-  bot("Que souhaitez-vous faire ?");
-  options([
-    { text: "💸 Retrait", action: retrait },
-    { text: "🔁 Virement", action: virement },
-    { text: "💳 Carte bloquée", action: carte },
-    { text: "📞 Conseiller", action: conseiller }
-  ]);
-}
+function analyze(text){
 
-/* ====== ACCUEIL ====== */
-setTimeout(() => {
-  typing(() => {
-  bot(`
-Bonjour <b>${clientName}</b> 👋<br><br>
-📊 <b>Votre statut bancaire :</b><br>
-• Client depuis <b>${clientDays}</b> jours<br>
-• <b>${clientWithdrawals}</b> retraits effectués<br>
-• <b>${clientTransfers}</b> virements réalisés<br><br>
-Que souhaitez-vous faire ?
-`);
-  backMenu();
-});
+  /* ===== VIREMENTS ===== */
+  if(text.includes("virement")){
+    if(text.includes("non") || text.includes("bloqué") || text.includes("échoué")){
+      bot("Je comprends. Un virement non effectué peut être dû à un solde insuffisant, une erreur de bénéficiaire ou un contrôle de sécurité. Souhaitez-vous que je vous mette en relation avec un conseiller humain ?");
+    }else{
+      bot("Les virements WaveBank sont généralement instantanés. En cas de retard, une vérification humaine est recommandée.");
+    }
+    return;
+  }
 
+  /* ===== RETRAITS ===== */
+  if(text.includes("retrait")){
+    bot("Pour les retraits, assurez-vous que votre solde est suffisant et que votre compte n’est pas temporairement limité. Un agent peut vérifier votre situation si nécessaire.");
+    return;
+  }
 
-}, 500);
+  /* ===== CARTE ===== */
+  if(text.includes("carte")){
+    if(text.includes("bloquée")){
+      bot("Votre carte peut être bloquée pour des raisons de sécurité. Pour votre protection, seul un conseiller humain peut la débloquer après vérification.");
+    }else{
+      bot("Votre carte vous permet de payer et retirer facilement. En cas d’anomalie, un contrôle humain est indispensable.");
+    }
+    return;
+  }
 
-/* ====== SCÉNARIOS ====== */
+  /* ===== IA / PROJET ===== */
+  if(text.includes("ia") || text.includes("intelligence")){
+    bot("Je suis un assistant basé sur une intelligence artificielle simulée. Mon rôle est d’assister l’humain, pas de le remplacer. Les décisions finales reviennent toujours à un agent humain.");
+    return;
+  }
 
-/* --- RETRAIT --- */
-function retrait() {
-  scenario = "retrait";
-  user("Retrait");
-  bot("Quel type de problème de retrait rencontrez-vous ?");
-  options([
-    { text: "🏧 Distributeur indisponible", action: retraitATM },
-    { text: "💰 Argent non reçu", action: retraitArgent },
-    { text: "❌ Annuler", action: backMenu }
-  ]);
-}
+  /* ===== HUMAIN ===== */
+  if(text.includes("humain") || text.includes("conseiller")){
+    bot("Un conseiller humain peut intervenir à tout moment pour vérifier, valider ou corriger mes réponses. L’humain reste au centre des décisions.");
+    return;
+  }
 
-function retraitATM() {
-  user("Distributeur indisponible");
-  bot("Nous vous conseillons d’utiliser un autre distributeur ou de réessayer plus tard.");
-  options([
-    { text: "📞 Contacter un conseiller", action: conseiller },
-    { text: "🔙 Menu", action: backMenu }
-  ]);
-}
-
-function retraitArgent() {
-  user("Argent non reçu");
-  bot("Le montant a-t-il été débité de votre compte ?");
-  options([
-    { text: "Oui", action: () => {
-        user("Oui");
-        bot("Un dossier est ouvert. Le montant sera recrédité sous 72h.");
-        options([{ text: "🔙 Menu", action: backMenu }]);
-      }},
-    { text: "Non", action: () => {
-        user("Non");
-        bot("Aucune action n’est nécessaire. Merci de vérifier votre historique.");
-        options([{ text: "🔙 Menu", action: backMenu }]);
-      }}
-  ]);
-}
-
-
-/* --- VIREMENT --- */
-function virement() {
-  scenario = "virement";
-  user("Virement");
-  bot("S’agit-il d’un virement non effectué ?");
-  options([
-    { text: "Oui", action: virementOui },
-    { text: "Non", action: backMenu }
-  ]);
-}
-function virementOui() {
-  user("Oui");
-  bot("Depuis combien de temps le virement est-il en attente ?");
-  options([
-    { text: "⏱ Moins de 24h", action: () => {
-        user("Moins de 24h");
-        bot("Le virement est en cours de traitement. Merci de patienter.");
-        options([{ text: "🔙 Menu", action: backMenu }]);
-      }},
-    { text: "⌛ Plus de 24h", action: () => {
-        user("Plus de 24h");
-        bot("Un dossier est ouvert. Un conseiller va vous contacter.");
-        options([{ text: "📞 Conseiller", action: conseiller }]);
-      }}
-  ]);
-}
-
-/* --- CARTE BLOQUÉE --- */
-function carte() {
-  scenario = "carte";
-  user("Carte bloquée");
-  bot("Quelle est la raison du blocage ?");
-  options([
-    { text: "🔐 Code PIN erroné", action: cartePin },
-    { text: "🌍 Paiement refusé à l’étranger", action: carteEtranger },
-    { text: "❌ Annuler", action: backMenu }
-  ]);
-}
-
-function cartePin() {
-  user("Code PIN erroné");
-  bot("Votre carte est temporairement bloquée pour sécurité.");
-  options([
-    { text: "📞 Débloquer avec un conseiller", action: conseiller },
-    { text: "🔙 Menu", action: backMenu }
-  ]);
-}
-
-function carteEtranger() {
-  user("Paiement refusé à l’étranger");
-  bot("Souhaitez-vous activer les paiements internationaux ?");
-  options([
-    { text: "Oui", action: () => {
-        user("Oui");
-        bot("Paiements internationaux activés. Réessayez votre paiement.");
-        options([{ text: "🔙 Menu", action: backMenu }]);
-      }},
-    { text: "Non", action: backMenu }
-  ]);
-}
-
-/* --- CONSEILLER --- */
-function conseiller() {
-  user("Parler à un conseiller");
-  bot("Merci. Un conseiller WaveBank vous contactera dans les plus brefs délais.");
-  options([{ text: "🔙 Menu", action: backMenu }]);
+  /* ===== PAR DÉFAUT ===== */
+  bot("Je n’ai pas toutes les réponses. Pour des raisons de fiabilité et d’éthique, certaines décisions doivent être validées par un humain. Pouvez-vous préciser votre demande ?");
 }
 </script>
 
