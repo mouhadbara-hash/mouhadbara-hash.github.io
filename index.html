@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Chatbot – Projet d’étude</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(11,15,26,0.75), rgba(11,15,26,0.9)),
+        url("https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1600&q=80");
+      background-size: cover;
+      background-position: center;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .top-right {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(18px);
+      padding: 50px;
+      border-radius: 20px;
+      text-align: center;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+
+    h1 {
+      font-size: 2.6em;
+      margin-bottom: 15px;
+    }
+
+    h1 span {
+      color: #38bdf8;
+    }
+
+    p {
+      margin-bottom: 35px;
+      opacity: 0.9;
+      font-size: 1.1em;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 15px;
+      font-size: 18px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      background: #38bdf8;
+      color: #020617;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #0ea5e9;
+      transform: translateY(-2px);
+    }
+
+    footer {
+      margin-top: 25px;
+      font-size: 0.8em;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="top-right">Projet d’étude – Inès BENHASSEN</div>
+
+  <div class="card">
+    <h1>AI <span>Chatbot</span></h1>
+    <p>
+      Assistant intelligent capable de comprendre  
+      et répondre à toutes vos questions.
+    </p>
+
+    <button onclick="alert('Chatbot IA prêt à répondre')">
+      Lancer le Chatbot
+    </button>
+
+    <footer>
+      © 2025 – Projet IA
+    </footer>
+  </div>
+
+  <!-- CHATBOT IA (TIDIO) -->
+  <script src="//code.tidio.co/XXXXXXXX.js" async></script>
+
+</body>
+</html>
