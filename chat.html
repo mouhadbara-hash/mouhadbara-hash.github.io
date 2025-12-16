@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Chatbot IA Bancaire</title>
+  <title>Chatbot IA – Banque</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -34,7 +34,7 @@
     }
 
     .message {
-      max-width: 70%;
+      max-width: 75%;
       padding: 15px;
       border-radius: 14px;
       margin-bottom: 15px;
@@ -51,19 +51,24 @@
       margin-left: auto;
     }
 
-    .buttons {
-      margin-top: 10px;
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
     }
 
-    .buttons button {
-      margin: 5px 5px 0 0;
+    .options button {
       padding: 10px 14px;
       border-radius: 10px;
       border: none;
       cursor: pointer;
-      background: #38bdf8;
-      color: #020617;
-      font-weight: 600;
+      background: #334155;
+      color: white;
+    }
+
+    .options button:hover {
+      background: #475569;
     }
 
     .input-zone {
@@ -109,99 +114,107 @@
 <script>
 const user = localStorage.getItem("user") || "Client";
 document.getElementById("header").innerText =
-  "🏦 Banque IA — Bonjour " + user;
+  "🏦 Assistance Bancaire — Bonjour " + user;
 
 const chat = document.getElementById("chat");
 
-function botMessage(text) {
-  const div = document.createElement("div");
-  div.className = "message bot";
-  div.innerText = text;
-  chat.appendChild(div);
+function bot(text) {
+  const d = document.createElement("div");
+  d.className = "message bot";
+  d.innerText = text;
+  chat.appendChild(d);
   chat.scrollTop = chat.scrollHeight;
 }
 
-function userMessage(text) {
-  const div = document.createElement("div");
-  div.className = "message user";
-  div.innerText = text;
-  chat.appendChild(div);
+function userMsg(text) {
+  const d = document.createElement("div");
+  d.className = "message user";
+  d.innerText = text;
+  chat.appendChild(d);
   chat.scrollTop = chat.scrollHeight;
 }
 
-function botOptions(options) {
+function options(list) {
   const box = document.createElement("div");
-  box.className = "message bot";
-
-  const btns = document.createElement("div");
-  btns.className = "buttons";
-
-  options.forEach(opt => {
+  box.className = "options";
+  list.forEach(item => {
     const b = document.createElement("button");
-    b.innerText = opt.text;
-    b.onclick = opt.action;
-    btns.appendChild(b);
+    b.innerText = item.text;
+    b.onclick = item.action;
+    box.appendChild(b);
   });
-
-  box.appendChild(btns);
   chat.appendChild(box);
   chat.scrollTop = chat.scrollHeight;
 }
 
-/* ACCUEIL */
-botMessage(
-  "Bonjour " + user +
-  " 👋\nCompte client actif depuis 2022.\nComment puis-je vous aider aujourd’hui ?"
-);
+// ACCUEIL
+bot("Bonjour " + user + ". Bienvenue sur votre espace bancaire sécurisé.");
+bot("Veuillez sélectionner une option :");
 
-botOptions([
-  { text: "💳 Problème de carte", action: cardProblem },
-  { text: "💸 Erreur de virement", action: transferProblem },
-  { text: "📄 Informations de compte", action: accountInfo }
+options([
+  { text: "💳 Problème de carte", action: cardIssue },
+  { text: "💸 Erreur de virement", action: transferIssue },
+  { text: "👤 Informations de compte", action: accountInfo },
+  { text: "🔐 Problème de connexion", action: loginIssue },
+  { text: "📉 Solde et opérations", action: balanceInfo },
+  { text: "🏦 Agences & horaires", action: agencyInfo },
+  { text: "📞 Contacter un conseiller", action: advisor },
+  { text: "❓ Autre demande", action: other }
 ]);
 
-/* SCÉNARIOS */
-function cardProblem() {
-  botMessage("Quel est le problème avec votre carte ?");
-  botOptions([
-    { text: "Carte bloquée", action: () => botMessage("Votre carte est temporairement bloquée. Déblocage sous 24h.") },
-    { text: "Carte perdue", action: () => botMessage("Carte mise en opposition. Une nouvelle carte est en cours d’émission.") }
+// SCÉNARIOS
+function cardIssue() {
+  bot("Quel est le problème avec votre carte ?");
+  options([
+    { text: "Carte bloquée", action: () => bot("Votre carte est bloquée. Un conseiller va vous contacter.") },
+    { text: "Carte perdue", action: () => bot("Carte perdue déclarée. Opposition en cours.") },
+    { text: "Carte volée", action: () => bot("Carte volée. Sécurité activée immédiatement.") }
   ]);
 }
 
-function transferProblem() {
-  botMessage("Quel type d’erreur de virement ?");
-  botOptions([
-    { text: "Virement non reçu", action: () => botMessage("Le virement est en cours de traitement (délai 24-48h).") },
-    { text: "Montant incorrect", action: () => botMessage("Une réclamation a été enregistrée. Traitement sous 72h.") }
+function transferIssue() {
+  bot("Quel type de problème de virement ?");
+  options([
+    { text: "Virement non reçu", action: () => bot("Le virement est en cours de vérification.") },
+    { text: "Montant incorrect", action: () => bot("Une correction est en cours.") }
   ]);
 }
 
 function accountInfo() {
-  botMessage(
-    "📊 Informations du compte :\n" +
-    "• Statut : Actif\n" +
-    "• Dernière connexion : Hier\n" +
-    "• Type : Compte courant"
-  );
+  bot("Votre compte est actif depuis 2022. Souhaitez-vous autre chose ?");
 }
 
-/* TEXTE LIBRE */
+function loginIssue() {
+  bot("Souhaitez-vous réinitialiser votre mot de passe ?");
+}
+
+function balanceInfo() {
+  bot("Votre solde et vos opérations sont disponibles dans l’application mobile.");
+}
+
+function agencyInfo() {
+  bot("Nos agences sont ouvertes du lundi au vendredi, 8h–16h.");
+}
+
+function advisor() {
+  bot("Un conseiller va prendre en charge votre demande.");
+}
+
+function other() {
+  bot("Veuillez décrire votre demande.");
+}
+
 function send() {
   const input = document.getElementById("input");
   const text = input.value.trim();
   if (!text) return;
-
-  userMessage(text);
+  userMsg(text);
   input.value = "";
-
-  setTimeout(() => {
-    botMessage("Merci pour votre message. Veuillez utiliser les options proposées pour un traitement rapide.");
-  }, 500);
+  bot("Merci pour votre message. Un agent vous répondra.");
 }
 </script>
 
-<!-- TIDIO (TON CODE EXACT) -->
+<!-- TIDIO -->
 <script src="//code.tidio.co/qvjapnpjojmjuw8ygtsqbgggbfbf8wxs.js" async></script>
 
 </body>
