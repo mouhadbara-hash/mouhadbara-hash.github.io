@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Chatbot IA – Banque</title>
+  <title>Chatbot Bancaire IA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -35,10 +35,9 @@
 
     .message {
       max-width: 75%;
-      padding: 15px;
+      padding: 14px;
       border-radius: 14px;
-      margin-bottom: 15px;
-      line-height: 1.4;
+      margin-bottom: 12px;
     }
 
     .bot {
@@ -51,23 +50,23 @@
       margin-left: auto;
     }
 
-    .options {
+    .buttons {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       margin-bottom: 15px;
     }
 
-    .options button {
+    .buttons button {
+      background: #334155;
+      border: none;
       padding: 10px 14px;
       border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      background: #334155;
       color: white;
+      cursor: pointer;
     }
 
-    .options button:hover {
+    .buttons button:hover {
       background: #475569;
     }
 
@@ -112,106 +111,91 @@
 </div>
 
 <script>
-const user = localStorage.getItem("user") || "Client";
-document.getElementById("header").innerText =
-  "🏦 Assistance Bancaire — Bonjour " + user;
+  const user = localStorage.getItem("user") || "Client";
+  document.getElementById("header").innerText =
+    "🏦 Assistance Bancaire — Bonjour " + user;
 
-const chat = document.getElementById("chat");
+  const chat = document.getElementById("chat");
 
-function bot(text) {
-  const d = document.createElement("div");
-  d.className = "message bot";
-  d.innerText = text;
-  chat.appendChild(d);
-  chat.scrollTop = chat.scrollHeight;
-}
+  function bot(text) {
+    const d = document.createElement("div");
+    d.className = "message bot";
+    d.innerText = text;
+    chat.appendChild(d);
+    chat.scrollTop = chat.scrollHeight;
+  }
 
-function userMsg(text) {
-  const d = document.createElement("div");
-  d.className = "message user";
-  d.innerText = text;
-  chat.appendChild(d);
-  chat.scrollTop = chat.scrollHeight;
-}
+  function userMsg(text) {
+    const d = document.createElement("div");
+    d.className = "message user";
+    d.innerText = text;
+    chat.appendChild(d);
+    chat.scrollTop = chat.scrollHeight;
+  }
 
-function options(list) {
-  const box = document.createElement("div");
-  box.className = "options";
-  list.forEach(item => {
-    const b = document.createElement("button");
-    b.innerText = item.text;
-    b.onclick = item.action;
-    box.appendChild(b);
-  });
-  chat.appendChild(box);
-  chat.scrollTop = chat.scrollHeight;
-}
+  function options() {
+    const div = document.createElement("div");
+    div.className = "buttons";
+    div.innerHTML = `
+      <button onclick="choice('carte')">💳 Problème de carte</button>
+      <button onclick="choice('virement')">💸 Erreur de virement</button>
+      <button onclick="choice('compte')">📄 Informations de compte</button>
+      <button onclick="choice('connexion')">🔐 Problème de connexion</button>
+      <button onclick="choice('solde')">💰 Solde & opérations</button>
+      <button onclick="choice('agence')">🏢 Agence & horaires</button>
+      <button onclick="choice('conseiller')">📞 Contacter un conseiller</button>
+      <button onclick="choice('autre')">❓ Autre demande</button>
+    `;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
 
-// ACCUEIL
-bot("Bonjour " + user + ". Bienvenue sur votre espace bancaire sécurisé.");
-bot("Veuillez sélectionner une option :");
+  bot("Bonjour " + user + " 😊 Je suis votre assistant bancaire.");
+  bot("Comment puis-je vous aider aujourd’hui ?");
+  options();
 
-options([
-  { text: "💳 Problème de carte", action: cardIssue },
-  { text: "💸 Erreur de virement", action: transferIssue },
-  { text: "👤 Informations de compte", action: accountInfo },
-  { text: "🔐 Problème de connexion", action: loginIssue },
-  { text: "📉 Solde et opérations", action: balanceInfo },
-  { text: "🏦 Agences & horaires", action: agencyInfo },
-  { text: "📞 Contacter un conseiller", action: advisor },
-  { text: "❓ Autre demande", action: other }
-]);
+  function choice(type) {
+    userMsg(type);
+    if (type === "carte") {
+      bot("Quel est le problème avec votre carte ?");
+      bot("👉 Carte bloquée, perdue ou volée ?");
+    }
+    else if (type === "virement") {
+      bot("Votre virement est-il en attente, refusé ou erroné ?");
+    }
+    else if (type === "compte") {
+      bot("Souhaitez-vous consulter vos informations personnelles ou votre IBAN ?");
+    }
+    else if (type === "connexion") {
+      bot("Avez-vous oublié votre mot de passe ou votre compte est-il bloqué ?");
+    }
+    else if (type === "solde") {
+      bot("Souhaitez-vous consulter votre solde ou une opération récente ?");
+    }
+    else if (type === "agence") {
+      bot("Recherchez-vous une agence ou les horaires d’ouverture ?");
+    }
+    else if (type === "conseiller") {
+      bot("Un conseiller va vous contacter dans les plus brefs délais.");
+    }
+    else {
+      bot("Veuillez décrire votre demande.");
+    }
 
-// SCÉNARIOS
-function cardIssue() {
-  bot("Quel est le problème avec votre carte ?");
-  options([
-    { text: "Carte bloquée", action: () => bot("Votre carte est bloquée. Un conseiller va vous contacter.") },
-    { text: "Carte perdue", action: () => bot("Carte perdue déclarée. Opposition en cours.") },
-    { text: "Carte volée", action: () => bot("Carte volée. Sécurité activée immédiatement.") }
-  ]);
-}
+    setTimeout(() => {
+      bot("Avez-vous une autre demande ?");
+      options();
+    }, 1200);
+  }
 
-function transferIssue() {
-  bot("Quel type de problème de virement ?");
-  options([
-    { text: "Virement non reçu", action: () => bot("Le virement est en cours de vérification.") },
-    { text: "Montant incorrect", action: () => bot("Une correction est en cours.") }
-  ]);
-}
-
-function accountInfo() {
-  bot("Votre compte est actif depuis 2022. Souhaitez-vous autre chose ?");
-}
-
-function loginIssue() {
-  bot("Souhaitez-vous réinitialiser votre mot de passe ?");
-}
-
-function balanceInfo() {
-  bot("Votre solde et vos opérations sont disponibles dans l’application mobile.");
-}
-
-function agencyInfo() {
-  bot("Nos agences sont ouvertes du lundi au vendredi, 8h–16h.");
-}
-
-function advisor() {
-  bot("Un conseiller va prendre en charge votre demande.");
-}
-
-function other() {
-  bot("Veuillez décrire votre demande.");
-}
-
-function send() {
-  const input = document.getElementById("input");
-  const text = input.value.trim();
-  if (!text) return;
-  userMsg(text);
-  input.value = "";
-  bot("Merci pour votre message. Un agent vous répondra.");
-}
+  function send() {
+    const input = document.getElementById("input");
+    if (input.value.trim() === "") return;
+    userMsg(input.value);
+    input.value = "";
+    bot("Merci pour votre message. Avez-vous une autre demande ?");
+    options();
+  }
 </script>
 
 <!-- TIDIO -->
