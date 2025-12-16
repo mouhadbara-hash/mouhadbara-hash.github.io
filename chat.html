@@ -2,14 +2,11 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Chatbot IA Bancaire</title>
+  <title>Chatbot Banque IA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: "Segoe UI", sans-serif;
-    }
+    * { box-sizing: border-box; font-family: "Segoe UI", sans-serif; }
 
     body {
       margin: 0;
@@ -35,65 +32,31 @@
 
     .message {
       max-width: 75%;
-      padding: 15px;
-      border-radius: 14px;
-      margin-bottom: 15px;
-      line-height: 1.4;
-    }
-
-    .bot {
-      background: #1e293b;
-    }
-
-    .user {
-      background: #38bdf8;
-      color: #020617;
-      margin-left: auto;
-    }
-
-    .buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .buttons button {
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      background: #334155;
-      color: white;
-    }
-
-    .buttons button:hover {
-      background: #475569;
-    }
-
-    .input-zone {
-      display: flex;
-      padding: 15px;
-      background: #020617;
-      border-top: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .input-zone input {
-      flex: 1;
       padding: 14px;
-      border-radius: 12px;
-      border: none;
-      font-size: 16px;
-      outline: none;
+      border-radius: 14px;
+      margin-bottom: 12px;
     }
 
-    .input-zone button {
-      margin-left: 10px;
-      padding: 14px 20px;
-      border-radius: 12px;
-      border: none;
-      font-size: 16px;
+    .bot { background: #1e293b; }
+    .user { background: #38bdf8; color: #020617; margin-left: auto; }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .options button {
+      background: #020617;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 10px;
+      border-radius: 10px;
       cursor: pointer;
+    }
+
+    .options button:hover {
       background: #38bdf8;
       color: #020617;
     }
@@ -103,154 +66,137 @@
 <body>
 
 <header id="header"></header>
-
 <div class="chat-container" id="chat"></div>
 
-<div class="input-zone">
-  <input id="input" placeholder="Écrivez votre message...">
-  <button onclick="sendText()">Envoyer</button>
-</div>
-
 <script>
-  const user = localStorage.getItem("user") || "Client";
-  const chat = document.getElementById("chat");
-  const header = document.getElementById("header");
+const user = localStorage.getItem("user") || "Client";
+document.getElementById("header").innerText =
+  "🏦 Banque IA — Bonjour " + user;
 
-  header.innerText = "🏦 Banque Digitale — Bonjour " + user;
+const chat = document.getElementById("chat");
 
-  let step = "menu";
+function bot(text) {
+  const d = document.createElement("div");
+  d.className = "message bot";
+  d.innerText = text;
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+}
 
-  function bot(text) {
-    const d = document.createElement("div");
-    d.className = "message bot";
-    d.innerText = text;
-    chat.appendChild(d);
-    chat.scrollTop = chat.scrollHeight;
-  }
+function userMsg(text) {
+  const d = document.createElement("div");
+  d.className = "message user";
+  d.innerText = text;
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+}
 
-  function userMsg(text) {
-    const d = document.createElement("div");
-    d.className = "message user";
-    d.innerText = text;
-    chat.appendChild(d);
-    chat.scrollTop = chat.scrollHeight;
-  }
+function options(list) {
+  const div = document.createElement("div");
+  div.className = "options";
+  list.forEach(item => {
+    const b = document.createElement("button");
+    b.innerText = item.text;
+    b.onclick = item.action;
+    div.appendChild(b);
+  });
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
 
-  function buttons(options) {
-    const div = document.createElement("div");
-    div.className = "buttons";
-    options.forEach(o => {
-      const b = document.createElement("button");
-      b.innerText = o.text;
-      b.onclick = () => handleChoice(o.value);
-      div.appendChild(b);
-    });
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-  }
+function menuPrincipal() {
+  bot("Comment puis-je vous aider aujourd’hui ?");
+  options([
+    { text: "💳 Problème de carte", action: problemeCarte },
+    { text: "💸 Erreur de virement", action: virement },
+    { text: "👤 Informations de compte", action: compte },
+    { text: "🔐 Problème de connexion", action: connexion },
+    { text: "📊 Solde & opérations", action: solde },
+    { text: "🏦 Agences & horaires", action: agence },
+    { text: "📞 Contacter un conseiller", action: conseiller },
+    { text: "❓ Autre demande", action: autre }
+  ]);
+}
 
-  function showMenu() {
-    step = "menu";
-    bot("Comment puis-je vous aider aujourd’hui ?");
-    buttons([
-      {text:"💳 Problème de carte", value:"carte"},
-      {text:"💸 Erreur de virement", value:"virement"},
-      {text:"👤 Informations de compte", value:"compte"},
-      {text:"🔐 Problème de connexion", value:"connexion"},
-      {text:"📊 Solde & opérations", value:"solde"},
-      {text:"🏢 Agences & horaires", value:"agence"},
-      {text:"📞 Contacter un conseiller", value:"conseiller"},
-      {text:"✉️ Autre demande", value:"autre"}
-    ]);
-  }
+/* FLOWS */
 
-  function handleChoice(choice) {
-    if (choice === "carte") {
-      step = "carte";
-      bot("Quel est le problème avec votre carte ?");
-      buttons([
-        {text:"Carte bloquée", value:"carte_bloquee"},
-        {text:"Carte perdue", value:"carte_perdue"},
-        {text:"Carte volée", value:"carte_volee"}
-      ]);
-    }
+function problemeCarte() {
+  userMsg("Problème de carte");
+  bot("Quel est le problème avec votre carte ?");
+  options([
+    { text: "Carte bloquée", action: () => fin("Carte bloquée traitée") },
+    { text: "Carte perdue", action: () => fin("Carte perdue sécurisée") },
+    { text: "Carte volée", action: () => fin("Carte volée signalée") }
+  ]);
+}
 
-    if (choice === "carte_bloquee") {
-      bot("Votre carte est temporairement bloquée. Un conseiller va vous contacter.");
-      askOther();
-    }
+function virement() {
+  userMsg("Erreur de virement");
+  bot("Quel type de problème de virement ?");
+  options([
+    { text: "Virement non reçu", action: () => fin("Vérification en cours") },
+    { text: "Montant incorrect", action: () => fin("Analyse effectuée") }
+  ]);
+}
 
-    if (choice === "carte_perdue" || choice === "carte_volee") {
-      bot("Nous allons sécuriser votre compte et lancer le remplacement de la carte.");
-      askOther();
-    }
+function compte() {
+  userMsg("Informations de compte");
+  bot("Quelle information souhaitez-vous ?");
+  options([
+    { text: "Numéro de compte", action: () => fin("Information envoyée") },
+    { text: "Date d’ouverture", action: () => fin("Information envoyée") }
+  ]);
+}
 
-    if (choice === "virement") {
-      bot("Quel type de problème de virement rencontrez-vous ?");
-      buttons([
-        {text:"Virement non reçu", value:"vir1"},
-        {text:"Montant incorrect", value:"vir2"}
-      ]);
-    }
+function connexion() {
+  userMsg("Problème de connexion");
+  bot("Quel est le problème ?");
+  options([
+    { text: "Mot de passe oublié", action: () => fin("Procédure envoyée") },
+    { text: "Compte bloqué", action: () => fin("Compte sécurisé") }
+  ]);
+}
 
-    if (choice === "vir1" || choice === "vir2") {
-      bot("Votre demande est enregistrée. Une vérification est en cours.");
-      askOther();
-    }
+function solde() {
+  userMsg("Solde & opérations");
+  bot("Que souhaitez-vous consulter ?");
+  options([
+    { text: "Solde actuel", action: () => fin("Solde affiché") },
+    { text: "Dernières opérations", action: () => fin("Historique affiché") }
+  ]);
+}
 
-    if (choice === "compte") {
-      bot("Votre compte est actif depuis 2022. Que souhaitez-vous savoir ?");
-      askOther();
-    }
+function agence() {
+  userMsg("Agences & horaires");
+  bot("Information transmise.");
+  fin("Horaires communiqués");
+}
 
-    if (choice === "connexion") {
-      bot("Avez-vous oublié votre mot de passe ou rencontré une erreur ?");
-      askOther();
-    }
+function conseiller() {
+  userMsg("Contacter un conseiller");
+  fin("Un conseiller va vous contacter");
+}
 
-    if (choice === "solde") {
-      bot("Votre solde et vos opérations récentes sont disponibles dans votre espace client.");
-      askOther();
-    }
+function autre() {
+  userMsg("Autre demande");
+  fin("Votre demande a été enregistrée");
+}
 
-    if (choice === "agence") {
-      bot("Nos agences sont ouvertes du lundi au vendredi, de 8h à 17h.");
-      askOther();
-    }
-
-    if (choice === "conseiller") {
-      bot("Un conseiller va prendre contact avec vous.");
-      askOther();
-    }
-
-    if (choice === "autre") {
-      bot("Veuillez décrire votre demande.");
-      step = "texte";
-    }
-  }
-
-  function askOther() {
+/* FIN + CONTINUATION */
+function fin(message) {
+  bot(message);
+  setTimeout(() => {
     bot("Avez-vous une autre demande ?");
-    buttons([
-      {text:"Oui", value:"menu"},
-      {text:"Non", value:"fin"}
+    options([
+      { text: "Oui", action: menuPrincipal },
+      { text: "Non", action: () => bot("Merci de votre confiance. À bientôt.") }
     ]);
-  }
+  }, 600);
+}
 
-  function sendText() {
-    const input = document.getElementById("input");
-    const text = input.value.trim();
-    if (!text) return;
-    userMsg(text);
-    input.value = "";
-
-    if (step === "texte") {
-      bot("Merci pour votre message. Nous allons le traiter.");
-      askOther();
-    }
-  }
-
-  showMenu();
+/* DÉMARRAGE */
+bot("Bonjour " + user + " 😊");
+menuPrincipal();
 </script>
 
 <!-- TIDIO -->
