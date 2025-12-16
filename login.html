@@ -2,197 +2,117 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Chatbot Bancaire IA</title>
+  <title>Connexion – Chatbot IA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    * { box-sizing: border-box; font-family: "Segoe UI", sans-serif; }
-    body {
+    * {
       margin: 0;
-      background: #0b0f1a;
-      color: white;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(11,15,26,0.8), rgba(11,15,26,0.9)),
+        url("https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1600&q=80");
+      background-size: cover;
+      background-position: center;
       display: flex;
-      flex-direction: column;
-      height: 100vh;
+      align-items: center;
+      justify-content: center;
+      color: white;
     }
-    header {
-      padding: 20px;
-      background: #020617;
-      font-size: 1.2em;
+
+    .login-card {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(18px);
+      padding: 50px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      text-align: center;
     }
-    .chat-container {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
+
+    h2 {
+      margin-bottom: 10px;
+      font-size: 2em;
     }
-    .message {
-      max-width: 75%;
+
+    p {
+      opacity: 0.85;
+      margin-bottom: 30px;
+    }
+
+    input {
+      width: 100%;
       padding: 15px;
-      border-radius: 14px;
-      margin-bottom: 15px;
+      margin-bottom: 25px;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+      outline: none;
     }
-    .bot { background: #1e293b; }
-    .user {
+
+    button {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
       background: #38bdf8;
       color: #020617;
-      margin-left: auto;
+      transition: 0.3s;
     }
-    .options button {
-      display: block;
-      width: 100%;
-      margin-top: 8px;
-      padding: 10px;
-      background: #020617;
-      color: white;
-      border: 1px solid #38bdf8;
-      border-radius: 10px;
+
+    button:hover {
+      background: #0ea5e9;
+      transform: translateY(-2px);
+    }
+
+    .back {
+      margin-top: 20px;
+      font-size: 0.9em;
+      opacity: 0.7;
       cursor: pointer;
     }
-    .input-zone {
-      display: flex;
-      padding: 15px;
-      background: #020617;
-    }
-    .input-zone input {
-      flex: 1;
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-    }
-    .input-zone button {
-      margin-left: 10px;
-      padding: 12px 18px;
-      background: #38bdf8;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
+
+    .back:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 
 <body>
 
-<header id="header"></header>
+  <div class="login-card">
+    <h2>Connexion</h2>
+    <p>Accédez à votre assistant IA personnel</p>
 
-<div class="chat-container" id="chat"></div>
+    <input id="username" type="text" placeholder="Entrez votre prénom">
 
-<div class="input-zone">
-  <input id="input" placeholder="Écrivez votre message...">
-  <button onclick="send()">Envoyer</button>
-</div>
+    <button onclick="login()">Se connecter</button>
 
-<script>
-const user = localStorage.getItem("user") || "Client";
-document.getElementById("header").innerText =
-  "🏦 Banque Digitale — Bonjour " + user;
-
-const chat = document.getElementById("chat");
-
-function bot(text) {
-  const d = document.createElement("div");
-  d.className = "message bot";
-  d.innerHTML = text;
-  chat.appendChild(d);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function userMsg(text) {
-  const d = document.createElement("div");
-  d.className = "message user";
-  d.innerText = text;
-  chat.appendChild(d);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function menu() {
-  bot(`
-    Comment puis-je vous aider ?
-    <div class="options">
-      <button onclick="card()">💳 Problème de carte</button>
-      <button onclick="transfer()">💸 Erreur de virement</button>
-      <button onclick="account()">📄 Informations de compte</button>
-      <button onclick="login()">🔐 Problème de connexion</button>
-      <button onclick="balance()">📊 Solde & opérations</button>
-      <button onclick="agency()">🏢 Agence & horaires</button>
-      <button onclick="advisor()">👨‍💼 Contacter un conseiller</button>
-      <button onclick="other()">❓ Autre demande</button>
+    <div class="back" onclick="location.href='index.html'">
+      ← Retour à l’accueil
     </div>
-  `);
-}
+  </div>
 
-/* FLOWS */
-function card() {
-  bot(`
-    Quel est votre problème de carte ?
-    <div class="options">
-      <button onclick="bot('Votre carte est temporairement bloquée. Un conseiller va vous contacter.');menu()">Carte bloquée</button>
-      <button onclick="bot('Carte déclarée perdue. Opposition en cours.');menu()">Carte perdue</button>
-      <button onclick="bot('Carte volée. Sécurité activée.');menu()">Carte volée</button>
-    </div>
-  `);
-}
-
-function transfer() {
-  bot(`
-    Erreur de virement :
-    <div class="options">
-      <button onclick="bot('Virement en attente de validation.');menu()">En attente</button>
-      <button onclick="bot('Virement rejeté. Vérifiez le bénéficiaire.');menu()">Rejeté</button>
-      <button onclick="bot('Virement en cours de traitement.');menu()">En cours</button>
-    </div>
-  `);
-}
-
-function account() {
-  bot(`
-    Informations de compte :
-    <div class="options">
-      <button onclick="bot('Votre RIB est disponible dans votre espace.');menu()">RIB</button>
-      <button onclick="bot('Compte actif depuis 2022.');menu()">Ancienneté</button>
-    </div>
-  `);
-}
-
-function login() {
-  bot("Si vous avez oublié votre mot de passe, utilisez la récupération par email.");
-  menu();
-}
-
-function balance() {
-  bot("Votre solde et vos opérations sont disponibles dans votre espace client.");
-  menu();
-}
-
-function agency() {
-  bot("Nos agences sont ouvertes du lundi au vendredi de 9h à 17h.");
-  menu();
-}
-
-function advisor() {
-  bot("Un conseiller va vous contacter sous 24h.");
-  menu();
-}
-
-function other() {
-  bot("Merci de préciser votre demande.");
-  menu();
-}
-
-function send() {
-  const input = document.getElementById("input");
-  if (!input.value) return;
-  userMsg(input.value);
-  input.value = "";
-  setTimeout(menu, 500);
-}
-
-/* START */
-bot("Bonjour " + user + " 👋 Bienvenue sur votre assistant bancaire.");
-menu();
-</script>
-
-<!-- TIDIO -->
-<script src="//code.tidio.co/qvjapnpjojmjuw8ygtsqbgggbfbf8wxs.js" async></script>
+  <script>
+    function login() {
+      const user = document.getElementById("username").value;
+      if (user.trim() !== "") {
+        localStorage.setItem("user", user);
+        window.location.href = "chat.html";
+      } else {
+        alert("Veuillez entrer votre prénom");
+      }
+    }
+  </script>
 
 </body>
 </html>
