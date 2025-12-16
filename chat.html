@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Chatbot IA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #0b0f1a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      padding: 20px;
+      background: #020617;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      font-size: 1.2em;
+    }
+
+    .chat-container {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .message {
+      max-width: 70%;
+      padding: 15px;
+      border-radius: 14px;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
+    .bot {
+      background: #1e293b;
+    }
+
+    .user {
+      background: #38bdf8;
+      color: #020617;
+      margin-left: auto;
+    }
+
+    .input-zone {
+      display: flex;
+      padding: 15px;
+      background: #020617;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .input-zone input {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .input-zone button {
+      margin-left: 10px;
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      background: #38bdf8;
+      color: #020617;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header id="header-title"></header>
+
+  <div class="chat-container" id="chat"></div>
+
+  <div class="input-zone">
+    <input id="input" placeholder="Écrivez votre message...">
+    <button onclick="send()">Envoyer</button>
+  </div>
+
+  <script>
+    const user = localStorage.getItem("user") || "Utilisateur";
+    document.getElementById("header-title").innerText =
+      "🤖 Chatbot IA — Bonjour " + user;
+
+    const chat = document.getElementById("chat");
+
+    function botMessage(text) {
+      const div = document.createElement("div");
+      div.className = "message bot";
+      div.innerText = text;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function userMessage(text) {
+      const div = document.createElement("div");
+      div.className = "message user";
+      div.innerText = text;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    // Message d’accueil automatique
+    botMessage("Bonjour " + user + " 😊 Comment puis-je vous aider aujourd’hui ?");
+
+    function send() {
+      const input = document.getElementById("input");
+      const text = input.value.trim();
+      if (text === "") return;
+
+      userMessage(text);
+      input.value = "";
+
+      // Réponses IA simples (logique intelligente)
+      setTimeout(() => {
+        let reply = "Je suis un assistant IA. Pouvez-vous préciser votre question ?";
+
+        if (text.toLowerCase().includes("bonjour")) {
+          reply = "Bonjour " + user + " 👋 J’espère que vous allez bien.";
+        } else if (text.toLowerCase().includes("qui es-tu")) {
+          reply = "Je suis un chatbot IA développé dans le cadre d’un projet d’étude.";
+        } else if (text.toLowerCase().includes("merci")) {
+          reply = "Avec plaisir 😊";
+        } else if (text.toLowerCase().includes("aide")) {
+          reply = "Je peux répondre à vos questions et vous assister.";
+        }
+
+        botMessage(reply);
+      }, 600);
+    }
+  </script>
+
+</body>
+</html>
