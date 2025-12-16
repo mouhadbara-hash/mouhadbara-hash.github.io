@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Chatbot IA</title>
+  <title>Chatbot IA Bancaire</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -51,6 +51,21 @@
       margin-left: auto;
     }
 
+    .buttons {
+      margin-top: 10px;
+    }
+
+    .buttons button {
+      margin: 5px 5px 0 0;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background: #38bdf8;
+      color: #020617;
+      font-weight: 600;
+    }
+
     .input-zone {
       display: flex;
       padding: 15px;
@@ -82,67 +97,112 @@
 
 <body>
 
-  <header id="header-title"></header>
+<header id="header"></header>
 
-  <div class="chat-container" id="chat"></div>
+<div class="chat-container" id="chat"></div>
 
-  <div class="input-zone">
-    <input id="input" placeholder="Écrivez votre message...">
-    <button onclick="send()">Envoyer</button>
-  </div>
+<div class="input-zone">
+  <input id="input" placeholder="Écrivez votre message...">
+  <button onclick="send()">Envoyer</button>
+</div>
 
-  <script>
-    const user = localStorage.getItem("user") || "Utilisateur";
-    document.getElementById("header-title").innerText =
-      "🤖 Chatbot IA — Bonjour " + user;
+<script>
+const user = localStorage.getItem("user") || "Client";
+document.getElementById("header").innerText =
+  "🏦 Banque IA — Bonjour " + user;
 
-    const chat = document.getElementById("chat");
+const chat = document.getElementById("chat");
 
-    function botMessage(text) {
-      const div = document.createElement("div");
-      div.className = "message bot";
-      div.innerText = text;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-    }
+function botMessage(text) {
+  const div = document.createElement("div");
+  div.className = "message bot";
+  div.innerText = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
 
-    function userMessage(text) {
-      const div = document.createElement("div");
-      div.className = "message user";
-      div.innerText = text;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-    }
+function userMessage(text) {
+  const div = document.createElement("div");
+  div.className = "message user";
+  div.innerText = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
 
-    // Message d’accueil automatique
-    botMessage("Bonjour " + user + " 😊 Comment puis-je vous aider aujourd’hui ?");
+function botOptions(options) {
+  const box = document.createElement("div");
+  box.className = "message bot";
 
-    function send() {
-      const input = document.getElementById("input");
-      const text = input.value.trim();
-      if (text === "") return;
+  const btns = document.createElement("div");
+  btns.className = "buttons";
 
-      userMessage(text);
-      input.value = "";
+  options.forEach(opt => {
+    const b = document.createElement("button");
+    b.innerText = opt.text;
+    b.onclick = opt.action;
+    btns.appendChild(b);
+  });
 
-      // Réponses IA simples (logique intelligente)
-      setTimeout(() => {
-        let reply = "Je suis un assistant IA. Pouvez-vous préciser votre question ?";
+  box.appendChild(btns);
+  chat.appendChild(box);
+  chat.scrollTop = chat.scrollHeight;
+}
 
-        if (text.toLowerCase().includes("bonjour")) {
-          reply = "Bonjour " + user + " 👋 J’espère que vous allez bien.";
-        } else if (text.toLowerCase().includes("qui es-tu")) {
-          reply = "Je suis un chatbot IA développé dans le cadre d’un projet d’étude.";
-        } else if (text.toLowerCase().includes("merci")) {
-          reply = "Avec plaisir 😊";
-        } else if (text.toLowerCase().includes("aide")) {
-          reply = "Je peux répondre à vos questions et vous assister.";
-        }
+/* ACCUEIL */
+botMessage(
+  "Bonjour " + user +
+  " 👋\nCompte client actif depuis 2022.\nComment puis-je vous aider aujourd’hui ?"
+);
 
-        botMessage(reply);
-      }, 600);
-    }
-  </script>
+botOptions([
+  { text: "💳 Problème de carte", action: cardProblem },
+  { text: "💸 Erreur de virement", action: transferProblem },
+  { text: "📄 Informations de compte", action: accountInfo }
+]);
+
+/* SCÉNARIOS */
+function cardProblem() {
+  botMessage("Quel est le problème avec votre carte ?");
+  botOptions([
+    { text: "Carte bloquée", action: () => botMessage("Votre carte est temporairement bloquée. Déblocage sous 24h.") },
+    { text: "Carte perdue", action: () => botMessage("Carte mise en opposition. Une nouvelle carte est en cours d’émission.") }
+  ]);
+}
+
+function transferProblem() {
+  botMessage("Quel type d’erreur de virement ?");
+  botOptions([
+    { text: "Virement non reçu", action: () => botMessage("Le virement est en cours de traitement (délai 24-48h).") },
+    { text: "Montant incorrect", action: () => botMessage("Une réclamation a été enregistrée. Traitement sous 72h.") }
+  ]);
+}
+
+function accountInfo() {
+  botMessage(
+    "📊 Informations du compte :\n" +
+    "• Statut : Actif\n" +
+    "• Dernière connexion : Hier\n" +
+    "• Type : Compte courant"
+  );
+}
+
+/* TEXTE LIBRE */
+function send() {
+  const input = document.getElementById("input");
+  const text = input.value.trim();
+  if (!text) return;
+
+  userMessage(text);
+  input.value = "";
+
+  setTimeout(() => {
+    botMessage("Merci pour votre message. Veuillez utiliser les options proposées pour un traitement rapide.");
+  }, 500);
+}
+</script>
+
+<!-- TIDIO (TON CODE EXACT) -->
 <script src="//code.tidio.co/qvjapnpjojmjuw8ygtsqbgggbfbf8wxs.js" async></script>
+
 </body>
 </html>
